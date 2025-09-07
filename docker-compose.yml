@@ -1,0 +1,111 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: automat-postgres
+    environment:
+      POSTGRES_DB: ${MLFLOW_DB_NAME:-mlflowdb}
+      POSTGRES_USER: ${MLFLOW_DB_USER:-mlflow}
+      POSTGRES_PASSWORD: ${MLFLOW_DB_PASSWORD:-mlflow}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    container_name: automat-minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minio123}
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio-create-bucket:
+    image: minio/mc:latest
+    container_name: automat-minio-mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-minio} ${MINIO_ROOT_PASSWORD:-minio123} &&
+      mc mb -p local/${MLFLOW_S3_BUCKET:-mlflow} || true &&
+      mc anonymous set download local/${MLFLOW_S3_BUCKET:-mlflow} || true
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: docker/mlflow.Dockerfile
+      args:
+        MLFLOW_VERSION: ${MLFLOW_VERSION:-2.15.0}
+    container_name: automat-mlflow
+    environment:
+      MLFLOW_DB_NAME: ${MLFLOW_DB_NAME:-mlflowdb}
+      MLFLOW_DB_USER: ${MLFLOW_DB_USER:-mlflow}
+      MLFLOW_DB_PASSWORD: ${MLFLOW_DB_PASSWORD:-mlflow}
+      BACKEND_STORE_URI: postgresql+psycopg2://${MLFLOW_DB_USER}:${MLFLOW_DB_PASSWORD}@postgres:5432/${MLFLOW_DB_NAME}
+      ARTIFACTS_DESTINATION: s3://${MLFLOW_S3_BUCKET:-mlflow}
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minio}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minio123}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      minio-create-bucket:
+        condition: service_started
+    ports:
+      - "5000:5000"
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000 \
+      --backend-store-uri $BACKEND_STORE_URI \
+      --artifacts-destination $ARTIFACTS_DESTINATION \
+      --serve-artifacts
+
+  automat:
+    build:
+      context: .
+      dockerfile: devcontainer/Dockerfile
+    container_name: automat-dev
+    volumes:
+      - .:/workspaces/automat:cached
+    environment:
+      PYTHON_BIN: ${PYTHON_BIN:-/opt/py/bin/python}
+      CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES:-}
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minio}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minio123}
+    ports:
+      - "4000:4000"   # UI (if/when Phoenix enabled)
+    depends_on:
+      mlflow:
+        condition: service_started
+    tty: true
+    command: ["sleep", "infinity"]
+
+# GPU mode: build with devcontainer/Dockerfile.cuda and add:
+#   deploy:
+#     resources:
+#       reservations:
+#         devices:
+#           - capabilities: ["gpu"]
+
+volumes:
+  postgres-data: {}
+  minio-data: {}

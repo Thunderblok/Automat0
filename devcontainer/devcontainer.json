@@ -1,0 +1,18 @@
+{
+  "name": "Automat",
+  "dockerComposeFile": ["../docker-compose.yml"],
+  "service": "automat",
+  "workspaceFolder": "/workspaces/automat",
+  "postCreateCommand": "make bootstrap",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "elixir-lsp.elixir-ls",
+        "ms-python.python"
+      ]
+    }
+  }
+}

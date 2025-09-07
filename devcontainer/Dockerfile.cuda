@@ -1,0 +1,9 @@
+FROM nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    locales git curl wget unzip build-essential python3-venv python3-pip \
+    libgl1 libglib2.0-0 && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspaces/automat
+CMD ["sleep", "infinity"]
