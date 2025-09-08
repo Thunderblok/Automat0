@@ -58,7 +58,7 @@ defmodule AutomatCore.TrialSpecParser do
   defp maybe_atom(m, k) do
     case Map.fetch(m, k) do
       {:ok, v} when is_binary(v) -> Map.put(m, k, String.to_atom(v))
-      {:ok, _v} -> m
+      {:ok, v} when is_atom(v) -> m
       :error -> m
     end
   end

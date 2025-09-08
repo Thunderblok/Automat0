@@ -1,4 +1,12 @@
-defmodule Automat.MixProject do
+# Umbrella project for Automat
+
+# mix.exs must be at root, but in umbrella we have mix.exs + apps/*/mix.exs
+# We'll generate a minimal umbrella by delegating to Mix.Umbrella
+
+# Create a tiny umbrella config
+# Note: phx server cmd in Dockerfile assumes a Phoenix app; we provide a minimal endpoint later.
+
+defmodule Automat.Umbrella.MixProject do
   use Mix.Project
 
   def project do

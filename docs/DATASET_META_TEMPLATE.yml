@@ -1,0 +1,17 @@
+# Dataset META Template
+name: your-dataset-name
+version: v0
+created: 2025-09-07
+source:
+  uri: s3://bucket/path-or-local
+  license: Apache-2.0
+schema:
+  task_type: classification # or regression/generation
+  tokenizer: tokenizer.json
+  max_length: 256
+splits:
+  - name: train
+  - name: val
+  - name: test
+notes: |
+  Free-form notes here.

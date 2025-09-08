@@ -9,18 +9,25 @@ defmodule AutomatCore.MixProject do
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
-      elixir: "~> 1.16",
+      elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
   end
 
   def application do
-    [extra_applications: [:logger], mod: {AutomatCore.Application, []}]
+    [
+      extra_applications: [:logger],
+      mod: {AutomatCore.Application, []}
+    ]
   end
 
   defp deps do
     [
+      {:jason, "~> 1.4"},
+      {:nx, "~> 0.7"},
+      {:exla, "~> 0.7"},
+      {:broadway, "~> 1.0"},
       {:nimble_parsec, "~> 1.4"}
     ]
   end

@@ -1,0 +1,10 @@
+# Dataset MANIFEST Template
+root: ./data
+pattern: "*.jsonl.gz"
+fields:
+  - id
+  - split
+  - input_ids
+  - attention_mask
+  - labels
+  - meta

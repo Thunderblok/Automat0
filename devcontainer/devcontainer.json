@@ -1,17 +1,20 @@
 {
-  "name": "Automat",
+  "name": "Automat (BEAM + Python)",
   "dockerComposeFile": ["../docker-compose.yml"],
   "service": "automat",
   "workspaceFolder": "/workspaces/automat",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {},
+    "ghcr.io/devcontainers/features/python:1": { "version": "3.11" }
+  },
   "postCreateCommand": "make bootstrap",
   "customizations": {
     "vscode": {
-      "settings": {
-        "terminal.integrated.defaultProfile.linux": "bash"
-      },
       "extensions": [
         "elixir-lsp.elixir-ls",
-        "ms-python.python"
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "mhutchie.git-graph"
       ]
     }
   }

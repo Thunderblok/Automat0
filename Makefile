@@ -20,6 +20,11 @@ tokenize-smoke:
 trial-smoke:
 	iex -S mix run -e "AutomatWorkers.Smoke.run_trial()"
 
+# Trial intake smoke via FSM
+.PHONY: intake-smoke
+intake-smoke:
+	iex -S mix run -e 'AutomatCore.TrialSupervisor.start_trial(%{trial: %{"trial_id" => "intake-smoke", "task_type" => "classification", "artifacts_uri" => "/tmp/intake-smoke"}})'
+
 # MLflow + Postgres + MinIO stack
 .PHONY: up down logs ps
 up:

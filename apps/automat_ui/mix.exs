@@ -1,9 +1,9 @@
-defmodule AutomatIngest.MixProject do
+defmodule AutomatUI.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :automat_ingest,
+      app: :automat_ui,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -17,18 +17,18 @@ defmodule AutomatIngest.MixProject do
 
   def application do
     [
-      extra_applications: [:logger],
-      mod: {AutomatIngest.Application, []}
+      mod: {AutomatUI.Application, []},
+      extra_applications: [:logger, :runtime_tools]
     ]
   end
 
   defp deps do
     [
+      {:phoenix, "~> 1.7"},
+      {:phoenix_live_view, "~> 1.0"},
+      {:phoenix_html, "~> 4.0"},
       {:jason, "~> 1.4"},
-      {:nx, "~> 0.7"},
-      {:tokenizers, "~> 0.5"},
-      {:broadway, "~> 1.0"},
-      {:telemetry, "~> 1.2"}
+      {:plug_cowboy, "~> 2.6"}
     ]
   end
 end

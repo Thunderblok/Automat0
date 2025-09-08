@@ -3,6 +3,9 @@ numpy
 # Lock torch a bit older for compatibility in slim containers; skip on Windows
 torch==2.3.1; platform_system!="Windows"
 tensorflow-cpu==2.16.1
+# Optional: glyph's Automat for local FSM if we embed it in the worker later
 Automat==22.10.0
+# tokenizers for local preprocessing if needed on Python side
 tokenizers>=0.15.0
+# zmq if we add optional 0MQ path from Python side
 pyzmq>=26.0.0

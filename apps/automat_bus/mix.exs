@@ -1,9 +1,9 @@
-defmodule AutomatIngest.MixProject do
+defmodule AutomatBus.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :automat_ingest,
+      app: :automat_bus,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -18,17 +18,17 @@ defmodule AutomatIngest.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {AutomatIngest.Application, []}
+      mod: {AutomatBus.Application, []}
     ]
   end
 
   defp deps do
     [
       {:jason, "~> 1.4"},
-      {:nx, "~> 0.7"},
-      {:tokenizers, "~> 0.5"},
-      {:broadway, "~> 1.0"},
-      {:telemetry, "~> 1.2"}
+      {:phoenix_pubsub, "~> 2.1"},
+      {:tortoise311, "~> 0.12", optional: true},
+      {:chumak, "~> 1.5", optional: true},
+      {:ex_json_schema, "~> 0.10"}
     ]
   end
 end

@@ -1,4 +1,15 @@
 services:
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: automat-mqtt
+    ports:
+      - "1883:1883"
+    healthcheck:
+      test: ["CMD", "mosquitto_pub", "-h", "localhost", "-t", "health", "-m", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   postgres:
     image: postgres:15-alpine
     container_name: automat-postgres
@@ -91,9 +102,17 @@ services:
       MLFLOW_S3_ENDPOINT_URL: http://minio:9000
       AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minio}
       AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minio123}
+      MQTT_HOST: mqtt
+      MQTT_PORT: 1883
+      MQTT_CLIENT_ID: automat-dev
+      MQTT_QOS: 0
+      MQTT_SUBS: automat/#
+      AUTOMAT_BUS_ADAPTER: mqtt
     ports:
       - "4000:4000"   # UI (if/when Phoenix enabled)
     depends_on:
+      mqtt:
+        condition: service_started
       mlflow:
         condition: service_started
     tty: true
