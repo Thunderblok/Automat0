@@ -28,7 +28,8 @@ defmodule AutomatUI.MixProject do
       {:phoenix_live_view, "~> 1.0"},
       {:phoenix_html, "~> 4.0"},
       {:jason, "~> 1.4"},
-      {:plug_cowboy, "~> 2.6"}
+      {:plug_cowboy, "~> 2.6"},
+      {:finch, "~> 0.16"}
     ]
   end
 end
