@@ -1,0 +1,6 @@
+flowchart LR
+  Client -->|MQTT| Automat
+  Automat --> Workers
+  Workers -->|ML metrics| MLflow
+  MLflow -->|Artifacts| MinIO
+  Automat --> Postgres
